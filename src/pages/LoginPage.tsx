@@ -53,22 +53,28 @@ const LoginPage = () => {
       }
 
       if (data.user) {
-        // تحقق مما إذا كان المستخدم لديه ملف خبير
-        const { data: expertData, error: expertError } = await supabase
-          .from("experts")
-          .select("id")
-          .eq("user_id", data.user.id)
-          .single();
+        try {
+          // تحقق مما إذا كان المستخدم لديه ملف خبير
+          const { data: expertData, error: expertError } = await supabase
+            .from("experts")
+            .select("id")
+            .eq("user_id", data.user.id)
+            .maybeSingle();
 
-        if (expertError && expertError.code !== "PGRST116") {
-          console.error("Error checking expert profile:", expertError);
-        }
+          if (expertError) {
+            console.error("Error checking expert profile:", expertError);
+          }
 
-        toast.success("تم تسجيل الدخول بنجاح!");
-        
-        if (expertData) {
-          navigate("/expert-profile");
-        } else {
+          toast.success("تم تسجيل الدخول بنجاح!");
+          
+          if (expertData) {
+            navigate("/expert-profile");
+          } else {
+            navigate("/");
+          }
+        } catch (err) {
+          console.error("Error checking expert profile:", err);
+          // Default navigation if there's an error checking profile
           navigate("/");
         }
       }

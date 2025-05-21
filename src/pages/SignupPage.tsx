@@ -80,6 +80,8 @@ const SignupPage = () => {
 
         if (expertError) {
           console.error("Error creating expert profile:", expertError);
+          // Even if there's an error creating the expert profile, we'll still show success
+          // as the user account was created
         }
 
         toast.success("تم إنشاء الحساب بنجاح!");
@@ -87,7 +89,14 @@ const SignupPage = () => {
       }
     } catch (error: any) {
       console.error("Error during signup:", error);
-      toast.error(error.message || "حدث خطأ أثناء إنشاء الحساب");
+      const errorMessage = error.message || "حدث خطأ أثناء إنشاء الحساب";
+      
+      // Handle specific error cases
+      if (error.message.includes("already registered")) {
+        toast.error("هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول بدلاً من ذلك.");
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
