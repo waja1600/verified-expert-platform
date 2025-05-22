@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { expertPortfoliosTable } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import PortfolioTemplateSelector from "@/components/portfolio/PortfolioTemplateSelector";
 import PortfolioForm from "@/components/portfolio/PortfolioForm";
@@ -42,23 +42,26 @@ const PortfolioEditor = ({
       // Check if portfolio already exists
       if (portfolioData?.id) {
         // Update existing portfolio
-        const { error } = await expertPortfoliosTable
+        const { error } = await supabase
+          .from('expert_portfolios')
           .update(portfolioToSave)
-          .eq("id", portfolioData.id);
+          .eq('id', portfolioData.id);
 
         if (error) throw error;
       } else {
         // Insert new portfolio
-        const { error } = await expertPortfoliosTable
+        const { error } = await supabase
+          .from('expert_portfolios')
           .insert(portfolioToSave);
 
         if (error) throw error;
       }
 
       // Fetch the updated portfolio
-      const { data, error } = await expertPortfoliosTable
-        .select()
-        .eq("expert_id", expertId)
+      const { data, error } = await supabase
+        .from('expert_portfolios')
+        .select('*')
+        .eq('expert_id', expertId)
         .single();
 
       if (error) throw error;

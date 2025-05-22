@@ -45,14 +45,15 @@ const PortfolioPage = () => {
         
         <PortfolioPageHeader loading={loading} error={error} />
         
-        {!loading && !error && expertData ? (
+        {!error ? (
           <PortfolioPageContent 
             expertData={expertData} 
             portfolioData={portfolioData} 
+            isLoading={loading}
           />
-        ) : !loading && !error ? (
-          <PortfolioErrorState />
-        ) : null}
+        ) : (
+          <PortfolioErrorState message={error} />
+        )}
       </main>
       <Footer />
     </div>

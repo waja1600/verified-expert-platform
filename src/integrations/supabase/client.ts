@@ -26,7 +26,7 @@ export type PortfolioTable = {
 };
 
 // Create helper functions for expert_portfolios table operations
-// Fixing TypeScript issues by using the direct table name in each function
+// We need to use direct SQL operations since the table is not in the Database type
 export const expertPortfoliosTable = {
   select: () => {
     return supabase.from('expert_portfolios');

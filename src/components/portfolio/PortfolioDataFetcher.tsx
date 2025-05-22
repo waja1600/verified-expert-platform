@@ -1,6 +1,6 @@
 
-import { useEffect, useState } from "react";
-import { supabase, PortfolioTable, expertPortfoliosTable } from "@/integrations/supabase/client";
+import { useEffect } from "react";
+import { supabase, PortfolioTable } from "@/integrations/supabase/client";
 
 interface PortfolioDataFetcherProps {
   expertId: string;
@@ -33,11 +33,12 @@ const PortfolioDataFetcher = ({
 
         if (expertError) throw expertError;
 
-        // Fetch portfolio data using our helper
-        const { data: portfolio, error: portfolioError } = await expertPortfoliosTable
-          .select()
-          .eq("expert_id", expertId)
-          .single();
+        // Fetch portfolio data 
+        const { data: portfolio, error: portfolioError } = await supabase
+          .from('expert_portfolios')
+          .select('*')
+          .eq('expert_id', expertId)
+          .maybeSingle();
 
         if (portfolioError && portfolioError.code !== 'PGRST116') {
           throw portfolioError;
@@ -91,7 +92,7 @@ const PortfolioDataFetcher = ({
 
       } catch (err: any) {
         console.error("Error fetching expert data:", err);
-        onError(err.message);
+        onError(err.message || "حدث خطأ أثناء تحميل البيانات");
       } finally {
         onLoading(false);
       }
