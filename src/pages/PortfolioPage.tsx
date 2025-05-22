@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, PortfolioTable } from "@/integrations/supabase/client";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FlipBook from "@/components/portfolio/FlipBook";
@@ -44,12 +44,12 @@ const PortfolioPage = () => {
         if (expertError) throw expertError;
         setExpertData(expert);
 
-        // Fetch portfolio data - use type assertion to work around TypeScript error
-        const { data: portfolio, error: portfolioError } = await (supabase
-          .from('expert_portfolios') as any)
+        // Fetch portfolio data with type assertion
+        const { data: portfolio, error: portfolioError } = await supabase
+          .from('expert_portfolios')
           .select("*")
           .eq("expert_id", id)
-          .single();
+          .single() as unknown as { data: PortfolioTable | null, error: any };
 
         if (portfolioError && portfolioError.code !== 'PGRST116') {
           throw portfolioError;

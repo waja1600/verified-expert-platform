@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, PortfolioTable } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -194,12 +194,12 @@ const ExpertProfilePage = () => {
     };
 
     const fetchExpertPortfolio = async (expertId: string) => {
-      // Use type assertion to work around the TypeScript error
-      const { data, error } = await (supabase
-        .from('expert_portfolios') as any)
+      // Use type assertion for the query
+      const { data, error } = await supabase
+        .from('expert_portfolios')
         .select("*")
         .eq("expert_id", expertId)
-        .single();
+        .single() as unknown as { data: PortfolioTable | null, error: any };
 
       if (error) {
         if (error.code !== 'PGRST116') { // PGRST116 is "no rows returned" error
@@ -387,28 +387,28 @@ const ExpertProfilePage = () => {
 
       // Check if portfolio already exists
       if (portfolioData?.id) {
-        // Update existing portfolio - use type assertion to work around TypeScript error
-        const { error } = await (supabase
-          .from('expert_portfolios') as any)
+        // Update existing portfolio with type assertion
+        const { error } = await supabase
+          .from('expert_portfolios')
           .update(portfolioToSave)
-          .eq("id", portfolioData.id);
+          .eq("id", portfolioData.id) as unknown as { error: any };
 
         if (error) throw error;
       } else {
-        // Insert new portfolio - use type assertion to work around TypeScript error
-        const { error } = await (supabase
-          .from('expert_portfolios') as any)
-          .insert(portfolioToSave);
+        // Insert new portfolio with type assertion
+        const { error } = await supabase
+          .from('expert_portfolios')
+          .insert(portfolioToSave) as unknown as { error: any };
 
         if (error) throw error;
       }
 
-      // Fetch the updated portfolio - use type assertion to work around TypeScript error
-      const { data, error } = await (supabase
-        .from('expert_portfolios') as any)
+      // Fetch the updated portfolio with type assertion
+      const { data, error } = await supabase
+        .from('expert_portfolios')
         .select("*")
         .eq("expert_id", expertId)
-        .single();
+        .single() as unknown as { data: PortfolioTable | null, error: any };
 
       if (error) throw error;
       
