@@ -25,22 +25,18 @@ export type PortfolioTable = {
   updated_at: string;
 };
 
-// Create a custom function to access the expert_portfolios table with proper typing
+// Create a custom type that will be used in our code
 export const expertPortfoliosTable = {
   select: () => {
-    // @ts-ignore - We're ignoring TypeScript here because the table isn't in the generated types
-    return supabase.from('expert_portfolios');
+    return supabase.from('expert_portfolios') as unknown as ReturnType<typeof supabase.from<PortfolioTable>>;
   },
   update: (data: Partial<PortfolioTable>) => {
-    // @ts-ignore - We're ignoring TypeScript here because the table isn't in the generated types
-    return supabase.from('expert_portfolios').update(data);
+    return supabase.from('expert_portfolios').update(data) as unknown as ReturnType<typeof supabase.from<PortfolioTable>['update']>;
   },
   insert: (data: Partial<PortfolioTable>) => {
-    // @ts-ignore - We're ignoring TypeScript here because the table isn't in the generated types
-    return supabase.from('expert_portfolios').insert(data);
+    return supabase.from('expert_portfolios').insert(data) as unknown as ReturnType<typeof supabase.from<PortfolioTable>['insert']>;
   },
   delete: () => {
-    // @ts-ignore - We're ignoring TypeScript here because the table isn't in the generated types
-    return supabase.from('expert_portfolios').delete();
+    return supabase.from('expert_portfolios').delete() as unknown as ReturnType<typeof supabase.from<PortfolioTable>['delete']>;
   }
 };
