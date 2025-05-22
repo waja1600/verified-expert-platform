@@ -25,18 +25,19 @@ export type PortfolioTable = {
   updated_at: string;
 };
 
-// Create a custom type that will be used in our code
+// Create helper functions for expert_portfolios table operations
+// Fixing TypeScript issues by using the direct table name in each function
 export const expertPortfoliosTable = {
   select: () => {
-    return supabase.from('expert_portfolios') as unknown as ReturnType<typeof supabase.from<PortfolioTable>>;
+    return supabase.from('expert_portfolios');
   },
   update: (data: Partial<PortfolioTable>) => {
-    return supabase.from('expert_portfolios').update(data) as unknown as ReturnType<typeof supabase.from<PortfolioTable>['update']>;
+    return supabase.from('expert_portfolios').update(data);
   },
   insert: (data: Partial<PortfolioTable>) => {
-    return supabase.from('expert_portfolios').insert(data) as unknown as ReturnType<typeof supabase.from<PortfolioTable>['insert']>;
+    return supabase.from('expert_portfolios').insert(data);
   },
   delete: () => {
-    return supabase.from('expert_portfolios').delete() as unknown as ReturnType<typeof supabase.from<PortfolioTable>['delete']>;
+    return supabase.from('expert_portfolios').delete();
   }
 };
