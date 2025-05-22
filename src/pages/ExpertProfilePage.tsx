@@ -1,8 +1,7 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { supabase, PortfolioTable } from "@/integrations/supabase/client";
+import { supabase, PortfolioTable, expertPortfoliosTable } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -194,12 +193,11 @@ const ExpertProfilePage = () => {
     };
 
     const fetchExpertPortfolio = async (expertId: string) => {
-      // Use type assertion for the query
-      const { data, error } = await supabase
-        .from('expert_portfolios')
-        .select("*")
+      // Use our helper function for the query
+      const { data, error } = await expertPortfoliosTable
+        .select()
         .eq("expert_id", expertId)
-        .single() as unknown as { data: PortfolioTable | null, error: any };
+        .single();
 
       if (error) {
         if (error.code !== 'PGRST116') { // PGRST116 is "no rows returned" error
@@ -210,7 +208,7 @@ const ExpertProfilePage = () => {
 
       if (data) {
         setSelectedTemplate(data.template_id || "classic");
-        setPortfolioData(data);
+        setPortfolioData(data as PortfolioTable);
       }
     };
 
@@ -387,32 +385,29 @@ const ExpertProfilePage = () => {
 
       // Check if portfolio already exists
       if (portfolioData?.id) {
-        // Update existing portfolio with type assertion
-        const { error } = await supabase
-          .from('expert_portfolios')
+        // Update existing portfolio using our helper
+        const { error } = await expertPortfoliosTable
           .update(portfolioToSave)
-          .eq("id", portfolioData.id) as unknown as { error: any };
+          .eq("id", portfolioData.id);
 
         if (error) throw error;
       } else {
-        // Insert new portfolio with type assertion
-        const { error } = await supabase
-          .from('expert_portfolios')
-          .insert(portfolioToSave) as unknown as { error: any };
+        // Insert new portfolio using our helper
+        const { error } = await expertPortfoliosTable
+          .insert(portfolioToSave);
 
         if (error) throw error;
       }
 
-      // Fetch the updated portfolio with type assertion
-      const { data, error } = await supabase
-        .from('expert_portfolios')
-        .select("*")
+      // Fetch the updated portfolio using our helper
+      const { data, error } = await expertPortfoliosTable
+        .select()
         .eq("expert_id", expertId)
-        .single() as unknown as { data: PortfolioTable | null, error: any };
+        .single();
 
       if (error) throw error;
       
-      setPortfolioData(data);
+      setPortfolioData(data as PortfolioTable);
       toast.success("تم حفظ السيرة الذاتية بنجاح!");
     } catch (error: any) {
       console.error("Error saving portfolio:", error);

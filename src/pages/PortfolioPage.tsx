@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { supabase, PortfolioTable } from "@/integrations/supabase/client";
+import { supabase, PortfolioTable, expertPortfoliosTable } from "@/integrations/supabase/client";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FlipBook from "@/components/portfolio/FlipBook";
@@ -44,18 +43,17 @@ const PortfolioPage = () => {
         if (expertError) throw expertError;
         setExpertData(expert);
 
-        // Fetch portfolio data with type assertion
-        const { data: portfolio, error: portfolioError } = await supabase
-          .from('expert_portfolios')
-          .select("*")
+        // Fetch portfolio data using our helper
+        const { data: portfolio, error: portfolioError } = await expertPortfoliosTable
+          .select()
           .eq("expert_id", id)
-          .single() as unknown as { data: PortfolioTable | null, error: any };
+          .single();
 
         if (portfolioError && portfolioError.code !== 'PGRST116') {
           throw portfolioError;
         }
 
-        setPortfolioData(portfolio);
+        setPortfolioData(portfolio as PortfolioTable);
 
         // Fetch languages
         const { data: languages, error: languagesError } = await supabase

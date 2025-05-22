@@ -24,3 +24,23 @@ export type PortfolioTable = {
   created_at: string;
   updated_at: string;
 };
+
+// Create a custom function to access the expert_portfolios table with proper typing
+export const expertPortfoliosTable = {
+  select: () => {
+    // @ts-ignore - We're ignoring TypeScript here because the table isn't in the generated types
+    return supabase.from('expert_portfolios');
+  },
+  update: (data: Partial<PortfolioTable>) => {
+    // @ts-ignore - We're ignoring TypeScript here because the table isn't in the generated types
+    return supabase.from('expert_portfolios').update(data);
+  },
+  insert: (data: Partial<PortfolioTable>) => {
+    // @ts-ignore - We're ignoring TypeScript here because the table isn't in the generated types
+    return supabase.from('expert_portfolios').insert(data);
+  },
+  delete: () => {
+    // @ts-ignore - We're ignoring TypeScript here because the table isn't in the generated types
+    return supabase.from('expert_portfolios').delete();
+  }
+};
