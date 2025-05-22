@@ -60,6 +60,19 @@ interface Specialization {
   category_id: string;
 }
 
+// Define portfolio data interface to help with type safety
+interface PortfolioData {
+  id?: string;
+  expert_id?: string;
+  template_id: string;
+  education: any[];
+  experience: any[];
+  skills: any[];
+  achievements: string[];
+  created_at?: string;
+  updated_at?: string;
+}
+
 const expertProfileSchema = z.object({
   title: z.string().min(3, { message: "العنوان مطلوب" }),
   bio: z.string().min(10, { message: "يرجى إضافة نبذة عنك (10 أحرف على الأقل)" }),
@@ -86,7 +99,7 @@ const ExpertProfilePage = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("profile");
   const [selectedTemplate, setSelectedTemplate] = useState("classic");
-  const [portfolioData, setPortfolioData] = useState<any>(null);
+  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
 
   const form = useForm<z.infer<typeof expertProfileSchema>>({
@@ -181,8 +194,9 @@ const ExpertProfilePage = () => {
     };
 
     const fetchExpertPortfolio = async (expertId: string) => {
-      const { data, error } = await supabase
-        .from("expert_portfolios")
+      // Use type assertion to work around the TypeScript error
+      const { data, error } = await (supabase
+        .from('expert_portfolios') as any)
         .select("*")
         .eq("expert_id", expertId)
         .single();
@@ -373,25 +387,25 @@ const ExpertProfilePage = () => {
 
       // Check if portfolio already exists
       if (portfolioData?.id) {
-        // Update existing portfolio
-        const { error } = await supabase
-          .from("expert_portfolios")
+        // Update existing portfolio - use type assertion to work around TypeScript error
+        const { error } = await (supabase
+          .from('expert_portfolios') as any)
           .update(portfolioToSave)
           .eq("id", portfolioData.id);
 
         if (error) throw error;
       } else {
-        // Insert new portfolio
-        const { error } = await supabase
-          .from("expert_portfolios")
+        // Insert new portfolio - use type assertion to work around TypeScript error
+        const { error } = await (supabase
+          .from('expert_portfolios') as any)
           .insert(portfolioToSave);
 
         if (error) throw error;
       }
 
-      // Fetch the updated portfolio
-      const { data, error } = await supabase
-        .from("expert_portfolios")
+      // Fetch the updated portfolio - use type assertion to work around TypeScript error
+      const { data, error } = await (supabase
+        .from('expert_portfolios') as any)
         .select("*")
         .eq("expert_id", expertId)
         .single();

@@ -8,11 +8,24 @@ import FlipBook from "@/components/portfolio/FlipBook";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Define portfolio data interface
+interface PortfolioData {
+  id?: string;
+  expert_id?: string;
+  template_id: string;
+  education: any[];
+  experience: any[];
+  skills: any[];
+  achievements: string[];
+  created_at?: string;
+  updated_at?: string;
+}
+
 const PortfolioPage = () => {
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
   const [expertData, setExpertData] = useState<any>(null);
-  const [portfolioData, setPortfolioData] = useState<any>(null);
+  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -31,9 +44,9 @@ const PortfolioPage = () => {
         if (expertError) throw expertError;
         setExpertData(expert);
 
-        // Fetch portfolio data
-        const { data: portfolio, error: portfolioError } = await supabase
-          .from("expert_portfolios")
+        // Fetch portfolio data - use type assertion to work around TypeScript error
+        const { data: portfolio, error: portfolioError } = await (supabase
+          .from('expert_portfolios') as any)
           .select("*")
           .eq("expert_id", id)
           .single();
